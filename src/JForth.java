@@ -1,20 +1,51 @@
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
+
 class JForth {
     public static void main(String[] args) {
         JForth forth = new JForth();
         //testing
-        forth.print(forth.get_next());
+        while (!forth.exit) {
+            forth.step();
+        }
     }
-    Scanner scanner;
+    Map<String,Opcode[]> words;
+    BufferedReader buf;
+    Deque<Integer> stack;
+    boolean lineEnd;
+    boolean exit;
+    enum Opcode {
+        PRINT, PLUS, EXIT, SHOW
+    }
     JForth() {
         print("Welcome to jforth\n");
-        scanner = new Scanner(System.in);
+        buf = new BufferedReader(new InputStreamReader(System.in));
+        lineEnd = false;
+        exit = false;
+        words = new HashMap<String, Opcode[]>();
+        words.put(".", new Opcode[] {Opcode.PRINT});
+        words.put("+", new Opcode[] {Opcode.PLUS});
+        words.put("BYE", new Opcode[] {Opcode.EXIT});
+        words.put(".S", new Opcode[] {Opcode.SHOW});
     }
     public void print(String string) {
         System.out.print(string);
     }
-    public String get_next() {
-        // scanner already does the work of breaking up words with space
-        return scanner.next();
+    public boolean isLineEnd() {
+        return lineEnd;
+    }
+    public void step() {
+        String line;
+        try {
+            line = buf.readLine();
+        } catch (IOException e) {
+            line = "";
+        }
+        for (String word: line.split(" ")) {
+            print(word + "..");
+        }
+        print("\n");
     }
 }
